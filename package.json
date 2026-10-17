@@ -1,0 +1,11 @@
+{
+    "name": "ideatum",
+    "version": "1.0.0",
+    "description": "",
+
+    "scripts": {
+      "dev": "npx live-server -q --port=8123 --open=src"
+    },
+    "author": "",
+    "license": ""
+  }
