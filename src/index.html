@@ -54,6 +54,7 @@
                 const spans = chars.map(c=>html`<span>${c}</span>`)
                 const h =html`${spans}`
                 render(h,fragment)
+                removeCommentsFromFragment(fragment)
                 cursor.before(fragment)
             }
         }
@@ -114,7 +115,21 @@
 
         }
     }
+    function removeCommentsFromFragment(fragment) {
+        const walker = document.createTreeWalker(
+            fragment,
+            NodeFilter.SHOW_COMMENT,
+            null
+        );
 
+        const commentNodes = [];
+        while (walker.nextNode()) {
+            commentNodes.push(walker.currentNode);
+        }
+
+        commentNodes.forEach(node => node.parentNode.removeChild(node));
+        return fragment;
+    }
 </script>
 </body>
 </html>
