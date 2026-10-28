@@ -1,6 +1,6 @@
 import {LitElement, html, render} from 'https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js';
-import {setCursorToEnd, removeCommentsFromFragment} from "./foo.js";
-
+import {removeCommentsFromFragment, setCursorToEnd} from "./util.js";
+import {dummy} from "./foo.js";
 function myTemplate() {
     return html`<x- id="cursor" t="cursor"/>`;
 }
@@ -10,7 +10,7 @@ cursor.render()
 document.addEventListener("input",onInput)
 document.addEventListener("keydown",onKeyDown)
 window.addEventListener("focus", onFocus)
-document.addEventListener("focusout", onLostFocus)
+//document.addEventListener("focusout", onLostFocus)
 
 function focusCursor() {
     setCursorToEnd(cursorInput)
@@ -29,7 +29,7 @@ function cursorIsFocused() {
 function onInput(e) {
     if (!cursorIsFocused()) return;
     const txt = cursorInput.textContent
-    console.log(txt)
+    //console.log(txt)
     if (txt.length<1) return
     const fragment = document.createDocumentFragment();
     const chars = [...txt]
@@ -41,7 +41,6 @@ function onInput(e) {
     cursorInput.innerHTML=""
 }
 function onKeyDown(e) {
-    if (!cursorIsFocused()) return;
     var k = e.key
     if (k==="Control" || k==="Alt" || k==="Shift") return
     if (e.shiftKey) k = "Shift+" + k
@@ -49,6 +48,11 @@ function onKeyDown(e) {
     if (e.ctrlKey) k = "Control+" + k
 
     console.log(k)
+    if (!cursorIsFocused()) {
+        if (k==="Escape") {
+            focusCursor()
+        }
+    }
 
     if (k === "Backspace") {
         var sib = cursor.previousElementSibling
