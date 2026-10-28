@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="dark" />
     <title>Title</title>
     <style>
-        body {
+        body,pre {
             height: 100dvh;
             font-family: 'Consolas', sans-serif;
             font-size: 12pt;
@@ -19,7 +19,7 @@
     </style>
 </head>
 <body>
-<div id="app"></div>
+<pre id="app"></pre>
 <div id="log"></div>
 <script type="module">
     import {LitElement, html, render} from 'https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js';
@@ -33,45 +33,26 @@
 
     render(myTemplate(), app);
     setCursorToEnd(cursor)
-    function callback(mutationsList, observer) {
-        for (const mutation of mutationsList) {
-            if (mutation.type !== 'childList') {
-                continue;
-            }
-            let n = mutation.addedNodes;
-            if (n.length <= 0) {
-                continue;
-            }
-            n.forEach(processNode);
 
-            function processNode(node) {
-                if (node.nodeType !== Node.TEXT_NODE) {
-                    return;
-                }
-                const txt = node.textContent
-                const fragment = document.createDocumentFragment();
-                const chars = [...txt]
-                const spans = chars.map(c=>html`<span>${c}</span>`)
-                const h =html`${spans}`
-                render(h,fragment)
-                removeCommentsFromFragment(fragment)
-                cursor.before(fragment)
-            }
+    cursor.addEventListener("input",()=>{
+        const txt = cursor.textContent
+        console.log(txt)
+        if (cursor.textContent === "\n") {
+            debugger
+
+            cursor.innerHTML=""
+            return
         }
+        const fragment = document.createDocumentFragment();
+        const chars = [...txt]
+        const spans = chars.map(c=>html`<span>${c}</span>`)
+        const h =html`${spans}`
+        render(h,fragment)
+        removeCommentsFromFragment(fragment)
+        cursor.before(fragment)
         cursor.innerHTML=""
-    };
+    })
 
-    // 3. Create an observer instance linked to the callback function
-    const observer = new MutationObserver(callback);
-
-    // 4. Options for the observer (we only care about direct children mutations)
-    const config = {
-        childList: true,      // Target addition/removal of child nodes
-        subtree: false        // Set to true if you want to watch deeply nested children too
-    };
-
-    // 5. Start observing the target node
-    observer.observe(cursor, config);
     cursor.addEventListener('keydown', keydown);
 
     function keydown(e) {
@@ -113,6 +94,10 @@
             setCursorToEnd(cursor)
         } else if (k === "Control+Enter") {
 
+        } else if (k==="Enter") {
+            var el = document.createElement("br")
+            cursor.before(el)
+            e.preventDefault()
         }
     }
     function removeCommentsFromFragment(fragment) {
